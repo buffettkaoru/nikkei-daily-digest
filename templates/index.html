@@ -223,6 +223,63 @@
             background: var(--accent);
         }
 
+        .summary-section {
+            max-width: 800px;
+            margin: 20px auto 0;
+            padding: 0 16px;
+        }
+
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .summary-card h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .summary-box {
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--text);
+            max-height: 320px;
+            overflow-y: auto;
+            text-align: left;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 10px 24px;
+            background: #2196F3;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover { background: #1976D2; }
+        .copy-btn.copied { background: #4CAF50; }
+
         @media (max-width: 600px) {
             .container {
                 padding: 12px;
@@ -260,6 +317,15 @@
             <a class="download-btn" href="market_summary.png" download="market_summary.png">
                 ⬇ 画像をダウンロード
             </a>
+        </div>
+    </div>
+
+    <div class="summary-section">
+        <div class="summary-card">
+            <h2>📋 本日のニュース要約（YouTube概要欄・台本用）</h2>
+            <div class="summary-box" id="summaryText">{% set ns = namespace(text="") %}{% set ns.text = "📺 本日の市場・経済ニュース（" + today_date + "）\n\n" %}{% for category, articles in categorized_news.items() %}{% if articles %}{% set ns.text = ns.text + "▼ " + category + "\n" %}{% for article in articles[:5] %}{% set ns.text = ns.text + "・" + article.title + "\n" %}{% endfor %}{% set ns.text = ns.text + "\n" %}{% endif %}{% endfor %}{% set ns.text = ns.text + "---\n毎朝8時に自動更新 | buffettkaoru.github.io/buffett-kaoru-news/" %}{{ ns.text }}</div>
+            <br>
+            <button class="copy-btn" id="copyBtn" onclick="copyText()">📋 全文コピー</button>
         </div>
     </div>
 
@@ -308,5 +374,20 @@
         <p>ニュースは日経新聞等のRSSフィードから自動取得されています</p>
         <p>毎朝 8:00 (JST) に自動更新</p>
     </footer>
+
+    <script>
+        function copyText() {
+            const text = document.getElementById('summaryText').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✅ コピーしました！';
+                btn.classList.add('copied');
+                setTimeout(function() {
+                    btn.textContent = '📋 全文コピー';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
