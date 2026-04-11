@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バフェットかおる ｜ Claude Mythos 解説</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: "Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    background: #0a0e1a;
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .slide {
+    display: none;
+    width: 100vw; height: 100vh;
+    position: absolute; top:0; left:0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    animation: fadeIn 0.6s ease;
+  }
+  .slide.active { display: flex; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+
+  /* ── オープニング ── */
+  .slide-opening { background: linear-gradient(135deg, #0a0e1a 0%, #1B3F6E 100%); text-align:center; }
+  .slide-opening .brand { font-size: 1.0rem; color: #7ec8e3; letter-spacing: 0.2em; margin-bottom: 20px; }
+  .slide-opening .hook { font-size: 1.1rem; color: #ccc; line-height: 1.9; margin-bottom: 28px; max-width: 700px; }
+  .slide-opening h1 { font-size: 2.6rem; font-weight: 900; line-height: 1.3; }
+  .slide-opening h1 span { color: #FFD700; }
+  .slide-opening .sub { margin-top: 20px; font-size: 1rem; color: #aaa; }
+
+  /* ── 説明系スライド（左揃え） ── */
+  .slide-explain { background: linear-gradient(135deg, #0f1923 0%, #1a1a2e 100%); align-items: flex-start; }
+  .slide-explain .label {
+    font-size: 0.85rem; color: #FFD700; letter-spacing: 0.2em; margin-bottom: 12px;
+  }
+  .slide-explain h2 { font-size: 2rem; font-weight: 900; line-height: 1.4; margin-bottom: 28px; }
+  .slide-explain h2 em { font-style:normal; color: #FFD700; }
+  .slide-explain p { font-size: 1.1rem; line-height: 2; color: #ccc; max-width: 820px; }
+  .slide-explain p strong { color: #fff; }
+  .highlight { color: #7ec8e3; font-weight: 700; }
+
+  /* ── リスト系スライド ── */
+  .slide-list { background: linear-gradient(135deg, #0f1923 0%, #1a2f4a 100%); align-items: flex-start; }
+  .slide-list .label { font-size: 0.85rem; color: #FFD700; letter-spacing: 0.2em; margin-bottom: 12px; }
+  .slide-list h2 { font-size: 1.9rem; font-weight: 900; line-height: 1.4; margin-bottom: 24px; }
+  .slide-list h2 em { font-style:normal; color: #FFD700; }
+  .item-list { list-style: none; max-width: 820px; width: 100%; }
+  .item-list li {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-left: 4px solid #7ec8e3;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 12px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #ddd;
+  }
+  .item-list li strong { color: #FFD700; }
+  .item-list li .num { color: #7ec8e3; font-weight: 900; margin-right: 8px; }
+
+  /* ── 警告系スライド ── */
+  .slide-warn { background: linear-gradient(135deg, #1a0a0a 0%, #2e0f0f 100%); text-align:center; }
+  .slide-warn .label { font-size: 0.85rem; color: #e74c3c; letter-spacing: 0.2em; margin-bottom: 20px; }
+  .slide-warn h2 { font-size: 2rem; font-weight: 900; line-height: 1.4; margin-bottom: 28px; }
+  .slide-warn h2 em { font-style:normal; color: #e74c3c; }
+  .slide-warn p { font-size: 1.1rem; line-height: 2; color: #ccc; max-width: 760px; }
+  .slide-warn p strong { color: #fff; }
+
+  /* ── 投資インパクト ── */
+  .slide-invest { background: linear-gradient(135deg, #0f1923 0%, #1a2f1a 100%); align-items: flex-start; }
+  .slide-invest .label { font-size: 0.85rem; color: #27ae60; letter-spacing: 0.2em; margin-bottom: 12px; }
+  .slide-invest h2 { font-size: 1.9rem; font-weight: 900; line-height: 1.4; margin-bottom: 24px; }
+  .slide-invest h2 em { font-style:normal; color: #27ae60; }
+  .invest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 820px; width: 100%; }
+  .invest-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .invest-card .tag {
+    font-size: 0.75rem; letter-spacing: 0.1em; margin-bottom: 8px; font-weight: 700;
+  }
+  .invest-card .tag.risk { color: #e74c3c; }
+  .invest-card .tag.chance { color: #27ae60; }
+  .invest-card p { font-size: 0.95rem; line-height: 1.7; color: #ccc; }
+
+  /* ── 人間力スライド ── */
+  .slide-human { background: linear-gradient(135deg, #1a1a0a 0%, #2e2a0f 100%); text-align:center; }
+  .slide-human .label { font-size: 0.85rem; color: #FFD700; letter-spacing: 0.2em; margin-bottom: 20px; }
+  .slide-human h2 { font-size: 2rem; font-weight: 900; line-height: 1.4; margin-bottom: 28px; }
+  .slide-human h2 em { font-style:normal; color: #FFD700; }
+  .slide-human p { font-size: 1.1rem; line-height: 2; color: #ccc; max-width: 780px; }
+  .slide-human p strong { color: #fff; }
+
+  /* ── クロージング ── */
+  .slide-closing { background: linear-gradient(135deg, #1B3F6E 0%, #0a0e1a 100%); text-align:center; }
+  .slide-closing h2 { font-size: 1.8rem; font-weight: 900; margin-bottom: 24px; color: #FFD700; }
+  .slide-closing .summary { font-size: 1.05rem; line-height: 2.3; color: #ddd; }
+  .slide-closing .summary strong { color: #7ec8e3; }
+  .slide-closing .cta { margin-top: 36px; font-size: 1.2rem; color: #7ec8e3; font-weight: 700; line-height: 2; }
+
+  /* ── ナビ ── */
+  .nav {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 16px; z-index: 100;
+  }
+  .nav button {
+    padding: 12px 32px;
+    border: none; border-radius: 40px;
+    background: rgba(255,255,255,0.12);
+    color: #fff; font-size: 1rem; cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.25); }
+  .nav .slide-counter { padding: 12px 20px; color: #aaa; font-size: 0.9rem; line-height:2; }
+</style>
+</head>
+<body>
+
+<!-- 1. オープニング -->
+<div class="slide slide-opening active">
+  <div class="brand">📺 バフェットかおる Financial TV</div>
+  <p class="hook">
+    「AIって聞くと、なんか難しそう…」<br>
+    でも、これだけは知っておいてください。<br>
+    あなたの<strong style="color:#FFD700">老後のお金</strong>に関わる話です。
+  </p>
+  <h1>史上最強AI<br><span>Claude Mythos</span>とは？<br>54歳が超わかりやすく解説</h1>
+  <div class="sub">バフェットかおる ｜ 2026年4月</div>
+</div>
+
+<!-- 2. Mythosって何？ -->
+<div class="slide slide-explain">
+  <div class="label">STEP 01 ｜ まず知ってほしいこと</div>
+  <h2>「Mythos（マイソス）」って<br><em>どんなAI</em>なの？</h2>
+  <p>
+    Mythosとは<strong>アンソロピック社</strong>が開発した<br>
+    最新鋭のAI。名前の意味は<span class="highlight">「神話」</span>。<br><br>
+    いままでのAIは「聞いたことに答える」だけでした。<br>
+    でもMythosは<strong>「自分で考えて動く」</strong>のです。<br><br>
+    ChatGPTが「便利な辞書」なら、<br>
+    Mythosは<span class="highlight">「自分で仕事をこなす社員」</span>。<br>
+    そのくらい次元が違います。
+  </p>
+</div>
+
+<!-- 3. ドラえもんで例えると -->
+<div class="slide slide-explain">
+  <div class="label">STEP 02 ｜ わかりやすく言うと</div>
+  <h2><em>ドラえもん</em>で例えると<br>こういうことです</h2>
+  <p>
+    いままでのAIはポケットから道具を出すだけ。<br>
+    「翻訳して」「要約して」と頼めば答えてくれる。<br><br>
+    でも<span class="highlight">Mythosは違います。</span><br>
+    「のび太くん、今日のスケジュール全部整えておいたよ」<br>
+    と、<strong>頼んでいないのに先回りして動く</strong>AIです。<br><br>
+    しかも「ひみつ道具」が<strong>100個以上</strong>あって、<br>
+    組み合わせて使いこなす。これがMythosです。
+  </p>
+</div>
+
+<!-- 4. 5つの活用例 -->
+<div class="slide slide-list">
+  <div class="label">STEP 03 ｜ 具体的に何ができるの？</div>
+  <h2>Mythosが実際にできる<br><em>5つのこと</em></h2>
+  <ul class="item-list">
+    <li><span class="num">①</span><strong>投資判断</strong>　数百社の決算書を数秒で読んで「買い・売り」を提案</li>
+    <li><span class="num">②</span><strong>医療診断補助</strong>　症状を伝えると病院より先に候補を絞り込む</li>
+    <li><span class="num">③</span><strong>法律相談</strong>　弁護士に頼む前に、契約書のリスクを全部洗い出す</li>
+    <li><span class="num">④</span><strong>コード開発</strong>　アプリをゼロから自動で作り上げる</li>
+    <li><span class="num">⑤</span><strong>経営戦略</strong>　会社の課題を分析して、次の一手を提案する</li>
+  </ul>
+</div>
+
+<!-- 5. 銀行が震えている理由 -->
+<div class="slide slide-warn">
+  <div class="label">⚠ RISK ｜ 銀行が震えている</div>
+  <h2>なぜ<em>米財務省</em>が<br>緊急会合を開いたのか？</h2>
+  <p>
+    Mythosは<strong>銀行システムの「弱点」</strong>を<br>
+    自動で探せることがわかりました。<br><br>
+    悪用されれば、<span style="color:#e74c3c; font-weight:700">1秒で何千億円も動かせる</span>。<br>
+    だから米財務省がJPモルガン・シティなど<br>
+    大手銀行を集めて<strong>緊急会合</strong>を開いたのです。<br><br>
+    AIはもう「便利なツール」じゃない。<br>
+    <span style="color:#e74c3c; font-weight:700">金融システムを揺るがす存在</span>になっています。
+  </p>
+</div>
+
+<!-- 6. 50代60代への投資インパクト -->
+<div class="slide slide-invest">
+  <div class="label">STEP 04 ｜ あなたのお金への影響</div>
+  <h2>50代・60代が知るべき<br><em>投資インパクト</em></h2>
+  <div class="invest-grid">
+    <div class="invest-card">
+      <div class="tag risk">▼ リスク</div>
+      <p>銀行・保険・証券の<strong style="color:#e74c3c">人件費が激減</strong>。窓口業務がAIに置き換わり、株価が短期的に乱高下する可能性。</p>
+    </div>
+    <div class="invest-card">
+      <div class="tag chance">▲ チャンス</div>
+      <p><strong style="color:#27ae60">エヌビディア・マイクロソフト・アンソロピック関連</strong>に資金が集中。AI半導体株は長期で上昇が続く。</p>
+    </div>
+    <div class="invest-card">
+      <div class="tag risk">▼ 注意</div>
+      <p>「AIに強い」と宣伝するだけの<strong style="color:#e74c3c">中身のない企業</strong>に騙されないこと。決算の数字を必ず確認。</p>
+    </div>
+    <div class="invest-card">
+      <div class="tag chance">▲ 行動</div>
+      <p>SBI証券・楽天証券で<strong style="color:#27ae60">米国株・全世界株インデックス</strong>を積み立てる。これが最も安全な参加方法。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 7. 人間にしかできないこと -->
+<div class="slide slide-human">
+  <div class="label">STEP 05 ｜ でも焦らなくていい理由</div>
+  <h2>AIが奪えない<br><em>あなたの価値</em>とは？</h2>
+  <p>
+    私はJALで30年、空の上で働いてきました。<br>
+    乗客が不安な顔をしているとき、<strong>一言かけるタイミング</strong>。<br>
+    子連れの方への<strong>さりげない気配り</strong>。<br>
+    これはAIには絶対にできません。<br><br>
+    シミ取りレーザーもそうです。<br>
+    「この人には、今この治療が合う」と感じる<span class="highlight">直感と経験</span>。<br>
+    顔を見て、声を聞いて、初めてわかること。<br><br>
+    <strong>AI時代に最強なのは、人生経験という財産です。</strong>
+  </p>
+</div>
+
+<!-- 8. クロージング -->
+<div class="slide slide-closing">
+  <h2>📌 今日のまとめ</h2>
+  <div class="summary">
+    <strong>Mythos</strong> = 自分で考えて動く「神話級」のAI<br>
+    銀行も財務省も震えている<strong>本物の革命</strong><br>
+    でも、あなたの<strong>人生経験は奪われない</strong><br><br>
+    投資はSBI・楽天で<strong>米国株インデックスの積み立て</strong><br>
+    これが50代・60代の最善手です
+  </div>
+  <div class="cta">
+    👍 いいね &amp; チャンネル登録でお金の不安がなくなる！<br>
+    概要欄のリンクから最新情報も確認してください<br>
+    また明日の朝お会いしましょう！
+  </div>
+</div>
+
+<!-- ナビゲーション -->
+<div class="nav">
+  <button onclick="prev()">◀ 前へ</button>
+  <span class="slide-counter" id="counter">1 / 8</span>
+  <button onclick="next()">次へ ▶</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  }
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+</script>
+</body>
+</html>
