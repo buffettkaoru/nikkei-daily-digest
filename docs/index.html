@@ -175,6 +175,86 @@
             margin-top: 32px;
         }
 
+        .image-section {
+            max-width: 800px;
+            margin: 20px auto 0;
+            padding: 0 16px;
+        }
+        .image-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .image-card h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+        }
+        .image-card img {
+            max-width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .download-btn {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 10px 24px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .summary-section {
+            max-width: 800px;
+            margin: 20px auto 0;
+            padding: 0 16px;
+        }
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .summary-card h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        .summary-box {
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: var(--text);
+            max-height: 320px;
+            overflow-y: auto;
+            text-align: left;
+            font-family: monospace;
+        }
+        .copy-btn {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 10px 24px;
+            background: #2196F3;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .copy-btn.copied { background: #4CAF50; }
+
         @media (max-width: 600px) {
             .container {
                 padding: 12px;
@@ -202,6 +282,48 @@
 
     <div class="update-info">
         最終更新: 2026年04月11日 09:05 (JST)
+    </div>
+
+    <div class="image-section">
+        <div class="image-card">
+            <h2>📊 本日の朝メモ画像（ツイート用）</h2>
+            <img src="market_summary.png" alt="本日の市場サマリー画像">
+            <br>
+            <a class="download-btn" href="market_summary.png" download="market_summary.png">⬇ 画像をダウンロード</a>
+        </div>
+    </div>
+
+    <div class="summary-section">
+        <div class="summary-card">
+            <h2>📋 本日のニュース要約（YouTube概要欄・台本用）</h2>
+            <div class="summary-box" id="summaryText">📺 本日の市場・経済ニュース（2026年04月11日）
+
+▼ 経済
+・新株発行などで上場基準達成へ GMOインターネット - 日本経済新聞
+・NVIDIA8連騰 中東横目に底入れ探る米株相場 - 日本経済新聞
+・NYダウ反落269ドル安、停戦合意後の買い続かず 消費も懸念材料 - 日本経済新聞
+・田中角栄のニュース・発言など最新記事 - 日本経済新聞
+・米金融界が震える非公開AI「Mythos」 銀行システムの弱点突く - 日本経済新聞
+
+▼ マーケット・投資
+・スターリンクとは 最新ニュースと解説 - 日本経済新聞
+・中東情勢に揺れる世界経済 IMF見通しはリスクシナリオ注目 - 日本経済新聞
+・州営航空、変えるかパキスタンの空 Nikkei Asia注目記事 - 日本経済新聞
+・「LINE」などスターリンク対応 - 日本経済新聞
+・第一工業製薬、界面活性剤値上げ - 日本経済新聞
+
+▼ 政治
+・大塚、PTSD薬30年ごろ発売へ - 日本経済新聞
+・政治情報メディア『政治ドットコム』、ラジオ番組をinterfmにて放送開始 【PoliPoli】 - 日本経済新聞
+・10日の高市首相の動静 - 日本経済新聞
+・米消費者物価、3月3.3%上昇 イラン攻撃によるガソリン高で伸び拡大 - 日本経済新聞
+・映画「鬼滅の刃」、世界興行収入1179億円に 日本映画で歴代最高 - 日本経済新聞
+
+---
+毎朝8時に自動更新 | buffettkaoru.github.io/buffett-kaoru-news/</div>
+            <br>
+            <button class="copy-btn" id="copyBtn" onclick="copyText()">📋 全文コピー</button>
+        </div>
     </div>
 
     <div class="container">
@@ -1097,5 +1219,19 @@
         <p>ニュースは日経新聞等のRSSフィードから自動取得されています</p>
         <p>毎朝 8:00 (JST) に自動更新</p>
     </footer>
+    <script>
+        function copyText() {
+            const text = document.getElementById('summaryText').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✅ コピーしました！';
+                btn.classList.add('copied');
+                setTimeout(function() {
+                    btn.textContent = '📋 全文コピー';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>
