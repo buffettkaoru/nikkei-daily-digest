@@ -29,12 +29,138 @@
             line-height: 1.6;
         }
 
+        /* ========== 認証オーバーレイ ========== */
+        #auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #auth-overlay.hidden {
+            display: none;
+        }
+
+        .auth-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px 36px;
+            width: 340px;
+            max-width: 90vw;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .auth-logo {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        .auth-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .auth-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+
+        .auth-input-wrap {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .auth-input-wrap input {
+            width: 100%;
+            padding: 12px 44px 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .auth-input-wrap input:focus {
+            border-color: var(--accent);
+        }
+
+        .auth-input-wrap .toggle-pw {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .auth-btn:hover {
+            opacity: 0.9;
+        }
+
+        .auth-btn:active {
+            transform: scale(0.98);
+        }
+
+        .auth-error {
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: var(--accent);
+            min-height: 1.2em;
+        }
+
+        .auth-hint {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* ========== メインコンテンツ ========== */
+        #main-content {
+            display: none;
+        }
+
+        #main-content.visible {
+            display: block;
+        }
+
         header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
             padding: 24px 0;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .header-inner {
+            position: relative;
+            display: inline-block;
         }
 
         header h1 {
@@ -47,6 +173,27 @@
             font-size: 0.85rem;
             opacity: 0.8;
             margin-top: 6px;
+        }
+
+        .logout-btn {
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: #fff;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.25);
         }
 
         .update-info {
@@ -191,63 +338,200 @@
             .article-title {
                 font-size: 0.9rem;
             }
+
+            .logout-btn {
+                position: static;
+                transform: none;
+                display: block;
+                margin: 10px auto 0;
+                width: fit-content;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>日経ニュースダイジェスト</h1>
-        <div class="subtitle">投資 / 経済 / 政治 - 厳選ニュース</div>
-    </header>
 
-    <div class="update-info">
-        最終更新: {{ updated_at }} (JST)
+    <!-- 認証オーバーレイ -->
+    <div id="auth-overlay">
+        <div class="auth-box">
+            <div class="auth-logo">📰</div>
+            <div class="auth-title">日経ニュースダイジェスト</div>
+            <div class="auth-subtitle">アクセスにはパスワードが必要です</div>
+
+            <form id="auth-form" autocomplete="off">
+                <div class="auth-input-wrap">
+                    <input
+                        type="password"
+                        id="pw-input"
+                        placeholder="パスワードを入力"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <button type="button" class="toggle-pw" id="toggle-pw" title="表示切替">👁</button>
+                </div>
+                <button type="submit" class="auth-btn">ログイン</button>
+            </form>
+
+            <div class="auth-error" id="auth-error"></div>
+            <div class="auth-hint">※ パスワードはセッション中のみ保持されます</div>
+        </div>
     </div>
 
-    <div class="container">
-        {% for category, articles in categorized_news.items() %}
-        <section class="category">
-            <div class="category-header">
-                {% if 'マーケット' in category %}
-                <div class="category-icon icon-market">$</div>
-                {% elif '政治' in category %}
-                <div class="category-icon icon-politics">&#9878;</div>
-                {% else %}
-                <div class="category-icon icon-economy">&#9733;</div>
-                {% endif %}
-                <h2>{{ category }}</h2>
+    <!-- メインコンテンツ（認証後に表示） -->
+    <div id="main-content">
+        <header>
+            <div class="header-inner">
+                <h1>日経ニュースダイジェスト</h1>
+                <div class="subtitle">投資 / 経済 / 政治 - 厳選ニュース</div>
+                <button class="logout-btn" id="logout-btn" title="ログアウト">🔒 ログアウト</button>
             </div>
+        </header>
 
-            {% if articles %}
-            <ul class="article-list">
-                {% for article in articles %}
-                <li class="article-item">
-                    <a href="{{ article.link }}" target="_blank" rel="noopener noreferrer">
-                        <div class="article-title">{{ article.title }}</div>
-                        <div class="article-meta">
-                            {% if article.published_str %}
-                            <span class="article-time">{{ article.published_str }}</span>
+        <div class="update-info">
+            最終更新: {{ updated_at }} (JST)
+        </div>
+
+        <div class="container">
+            {% for category, articles in categorized_news.items() %}
+            <section class="category">
+                <div class="category-header">
+                    {% if 'マーケット' in category %}
+                    <div class="category-icon icon-market">$</div>
+                    {% elif '政治' in category %}
+                    <div class="category-icon icon-politics">&#9878;</div>
+                    {% else %}
+                    <div class="category-icon icon-economy">&#9733;</div>
+                    {% endif %}
+                    <h2>{{ category }}</h2>
+                </div>
+
+                {% if articles %}
+                <ul class="article-list">
+                    {% for article in articles %}
+                    <li class="article-item">
+                        <a href="{{ article.link }}" target="_blank" rel="noopener noreferrer">
+                            <div class="article-title">{{ article.title }}</div>
+                            <div class="article-meta">
+                                {% if article.published_str %}
+                                <span class="article-time">{{ article.published_str }}</span>
+                                {% endif %}
+                            </div>
+                            {% if article.summary %}
+                            <div class="article-summary">{{ article.summary }}</div>
                             {% endif %}
-                        </div>
-                        {% if article.summary %}
-                        <div class="article-summary">{{ article.summary }}</div>
-                        {% endif %}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <div class="empty-message">
-                現在このカテゴリのニュースはありません
-            </div>
-            {% endif %}
-        </section>
-        {% endfor %}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-message">
+                    現在このカテゴリのニュースはありません
+                </div>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </div>
+
+        <footer>
+            <p>ニュースは日経新聞等のRSSフィードから自動取得されています</p>
+            <p>毎朝 8:00 (JST) に自動更新</p>
+        </footer>
     </div>
 
-    <footer>
-        <p>ニュースは日経新聞等のRSSフィードから自動取得されています</p>
-        <p>毎朝 8:00 (JST) に自動更新</p>
-    </footer>
+    <script>
+    (() => {
+        'use strict';
+
+        // パスワードのSHA-256ハッシュ（デフォルト: "buffett2026"）
+        // 変更する場合は以下のハッシュ値を差し替えてください
+        const PASSWORD_HASH = 'd186f200bef5b5018dbaa9048eacdedde475c971def84fd7ffcbc4ef9c109433';
+
+        const SESSION_KEY = 'nikkei_digest_auth';
+        const overlay = document.getElementById('auth-overlay');
+        const main = document.getElementById('main-content');
+        const form = document.getElementById('auth-form');
+        const pwInput = document.getElementById('pw-input');
+        const toggleBtn = document.getElementById('toggle-pw');
+        const errorEl = document.getElementById('auth-error');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // SHA-256ハッシュを計算（Web Crypto API）
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // 定数時間比較（タイミング攻撃対策）
+        function safeEqual(a, b) {
+            if (a.length !== b.length) return false;
+            let diff = 0;
+            for (let i = 0; i < a.length; i++) {
+                diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+            }
+            return diff === 0;
+        }
+
+        function showMain() {
+            overlay.classList.add('hidden');
+            main.classList.add('visible');
+        }
+
+        function showLogin() {
+            sessionStorage.removeItem(SESSION_KEY);
+            overlay.classList.remove('hidden');
+            main.classList.remove('visible');
+            pwInput.value = '';
+            errorEl.textContent = '';
+        }
+
+        // セッション確認
+        if (sessionStorage.getItem(SESSION_KEY) === '1') {
+            showMain();
+        }
+
+        // パスワード表示切替
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = pwInput.type === 'password';
+            pwInput.type = isPassword ? 'text' : 'password';
+            toggleBtn.textContent = isPassword ? '🙈' : '👁';
+        });
+
+        // ログインフォーム送信
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorEl.textContent = '';
+
+            const pw = pwInput.value;
+            if (!pw) return;
+
+            try {
+                const hash = await sha256(pw);
+                if (safeEqual(hash, PASSWORD_HASH)) {
+                    sessionStorage.setItem(SESSION_KEY, '1');
+                    showMain();
+                } else {
+                    errorEl.textContent = 'パスワードが正しくありません';
+                    pwInput.value = '';
+                    pwInput.focus();
+                }
+            } catch (err) {
+                errorEl.textContent = '認証処理に失敗しました。ページを再読み込みしてください。';
+            }
+        });
+
+        // ログアウト
+        logoutBtn.addEventListener('click', () => {
+            showLogin();
+        });
+
+        // Enterキーでフォーカスをボタンへ
+        pwInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') form.dispatchEvent(new Event('submit'));
+        });
+    })();
+    </script>
+
 </body>
 </html>
