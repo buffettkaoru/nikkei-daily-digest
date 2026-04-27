@@ -266,32 +266,87 @@ header h1 {
     margin: 16px 12px 0;
     background: #fff;
     border-radius: 10px;
-    padding: 16px;
+    padding: 14px 14px 12px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-    text-align: center;
 }
 
-#export-btn {
-    width: 100%;
-    background: #2c7be5;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 16px;
-    font-size: 1rem;
-    font-weight: 600;
-    font-family: inherit;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(44, 123, 229, 0.25);
+.export-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 4px;
 }
-#export-btn:active { background: #1f63c2; transform: translateY(1px); }
 
 .export-hint {
-    margin-top: 10px;
-    font-size: 0.78rem;
-    color: #98a2ae;
+    font-size: 0.76rem;
+    color: #5a6470;
     line-height: 1.5;
+    margin-bottom: 12px;
 }
+
+#export-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.gcal-btn {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4285f4, #1a73e8);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(26, 115, 232, 0.25);
+    -webkit-tap-highlight-color: transparent;
+}
+.gcal-btn:active { transform: translateY(1px); filter: brightness(0.95); }
+
+.gcal-date {
+    font-variant-numeric: tabular-nums;
+}
+.gcal-btn.sun .gcal-date { color: #ffd9df; }
+.gcal-btn.sat .gcal-date { color: #d6e7ff; }
+
+.gcal-time {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.95;
+    font-weight: 500;
+}
+
+.gcal-add {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.export-empty {
+    text-align: center;
+    padding: 12px;
+    color: #98a2ae;
+    font-size: 0.85rem;
+}
+
+.export-footer {
+    margin-top: 12px;
+    text-align: center;
+    border-top: 1px solid #eef0f3;
+    padding-top: 10px;
+}
+
+#ics-link {
+    color: #5a6470;
+    font-size: 0.78rem;
+    text-decoration: none;
+}
+#ics-link:active { color: #2c3e50; }
 
 /* ---------- Today FAB ---------- */
 #today-fab {

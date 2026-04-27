@@ -200,6 +200,7 @@ function render() {
     document.getElementById('month-label').textContent = `${viewYear}年${viewMonth}月`;
     renderGrid();
     renderSummary();
+    renderExport();
 }
 
 function renderGrid() {
@@ -495,6 +496,58 @@ function exportToCalendar() {
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+// ============================================
+// Googleカレンダー用 URL を作る
+// ============================================
+function googleCalendarUrl(key, shift) {
+    const [y, m, d] = key.split('-');
+    const dtStart = `${y}${m}${d}T${shift.start.replace(':', '')}00`;
+    const dtEnd   = `${y}${m}${d}T${shift.end.replace(':', '')}00`;
+    const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: 'パート',
+        dates: `${dtStart}/${dtEnd}`,
+        ctz: 'Asia/Tokyo',
+        details: `シフト ${shift.start}〜${shift.end}`
+    });
+    return 'https://calendar.google.com/calendar/render?' + params.toString();
+}
+
+function renderExport() {
+    const list = document.getElementById('export-list');
+    if (!list) return;
+    list.innerHTML = '';
+
+    const today = new Date();
+    const todayKey = dateKey(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+    const entries = Object.entries(shifts)
+        .filter(([k, v]) => !v.off && v.start && v.end && k >= todayKey)
+        .sort();
+
+    if (entries.length === 0) {
+        list.innerHTML = '<div class="export-empty">これから先のシフトはありません</div>';
+        return;
+    }
+
+    entries.forEach(([key, v]) => {
+        const [y, m, d] = key.split('-').map(Number);
+        const wd = new Date(y, m - 1, d).getDay();
+        const a = document.createElement('a');
+        a.className = 'gcal-btn';
+        if (wd === 0) a.classList.add('sun');
+        if (wd === 6) a.classList.add('sat');
+        a.href = googleCalendarUrl(key, v);
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.innerHTML =
+            `<span class="gcal-date">${m}/${d}(${WEEKDAYS[wd]})</span>` +
+            `<span class="gcal-time">${v.start}〜${v.end}</span>` +
+            `<span class="gcal-add">＋追加</span>`;
+        list.appendChild(a);
+    });
 }
 
 // ============================================
