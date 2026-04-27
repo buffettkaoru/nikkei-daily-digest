@@ -261,6 +261,38 @@ header h1 {
     font-weight: 600;
 }
 
+/* ---------- Export ---------- */
+#export-section {
+    margin: 16px 12px 0;
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+#export-btn {
+    width: 100%;
+    background: #2c7be5;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(44, 123, 229, 0.25);
+}
+#export-btn:active { background: #1f63c2; transform: translateY(1px); }
+
+.export-hint {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: #98a2ae;
+    line-height: 1.5;
+}
+
 /* ---------- Today FAB ---------- */
 #today-fab {
     position: fixed;

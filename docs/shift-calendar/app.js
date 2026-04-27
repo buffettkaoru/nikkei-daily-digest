@@ -419,6 +419,85 @@ async function deleteShift(key) {
 }
 
 // ============================================
+// iPhone カレンダーへエクスポート (.ics)
+// ============================================
+function buildIcs() {
+    const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Kaoru//Shift Calendar//JA',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:パートのシフト',
+        'X-WR-TIMEZONE:Asia/Tokyo',
+        'BEGIN:VTIMEZONE',
+        'TZID:Asia/Tokyo',
+        'BEGIN:STANDARD',
+        'DTSTART:19700101T000000',
+        'TZOFFSETFROM:+0900',
+        'TZOFFSETTO:+0900',
+        'TZNAME:JST',
+        'END:STANDARD',
+        'END:VTIMEZONE'
+    ];
+
+    const stamp = icsStampNow();
+    const entries = Object.entries(shifts)
+        .filter(([, v]) => !v.off && v.start && v.end)
+        .sort();
+
+    entries.forEach(([key, v]) => {
+        const [y, m, d] = key.split('-');
+        const [sh, sm] = v.start.split(':');
+        const [eh, em] = v.end.split(':');
+        const dtStart = `${y}${m}${d}T${sh}${sm}00`;
+        const dtEnd = `${y}${m}${d}T${eh}${em}00`;
+        lines.push(
+            'BEGIN:VEVENT',
+            `UID:shift-${key}@kaoru.local`,
+            `DTSTAMP:${stamp}`,
+            `DTSTART;TZID=Asia/Tokyo:${dtStart}`,
+            `DTEND;TZID=Asia/Tokyo:${dtEnd}`,
+            'SUMMARY:パート',
+            `DESCRIPTION:シフト ${v.start}〜${v.end}`,
+            'END:VEVENT'
+        );
+    });
+
+    lines.push('END:VCALENDAR');
+    return lines.join('\r\n');
+}
+
+function icsStampNow() {
+    const d = new Date();
+    return d.getUTCFullYear() +
+        pad(d.getUTCMonth() + 1) +
+        pad(d.getUTCDate()) + 'T' +
+        pad(d.getUTCHours()) +
+        pad(d.getUTCMinutes()) +
+        pad(d.getUTCSeconds()) + 'Z';
+}
+
+function exportToCalendar() {
+    const entries = Object.entries(shifts).filter(([, v]) => !v.off && v.start && v.end);
+    if (entries.length === 0) {
+        alert('登録されているシフトがありません');
+        return;
+    }
+    const ics = buildIcs();
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'shifts.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+// ============================================
 // バナー
 // ============================================
 function showBanner() {
