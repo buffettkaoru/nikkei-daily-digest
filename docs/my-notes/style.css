@@ -1,6 +1,5 @@
 /* ============================================
-   かおるのメモ帳 v2 — style.css
-   編集機能 + ゴミ箱機能対応
+   かおるのメモ帳 — style.css
    ============================================ */
 
 * {
@@ -35,9 +34,6 @@ body {
     line-height: 1.6;
 }
 
-/* ============================================
-   App shell
-   ============================================ */
 #app {
     display: flex;
     flex-direction: column;
@@ -47,9 +43,6 @@ body {
     background: var(--bg);
 }
 
-/* ============================================
-   Header
-   ============================================ */
 header {
     background: var(--header-bg);
     color: white;
@@ -88,9 +81,6 @@ header h1 {
     text-decoration: underline;
 }
 
-/* ============================================
-   Category tabs
-   ============================================ */
 #category-nav {
     background: white;
     border-bottom: 1px solid var(--border);
@@ -106,9 +96,7 @@ header h1 {
     gap: 2px;
 }
 
-.tabs-wrapper::-webkit-scrollbar {
-    display: none;
-}
+.tabs-wrapper::-webkit-scrollbar { display: none; }
 
 .tab {
     flex-shrink: 0;
@@ -123,9 +111,6 @@ header h1 {
     white-space: nowrap;
     transition: color 0.15s, border-color 0.15s;
     font-family: inherit;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
 }
 
 .tab.active {
@@ -134,26 +119,8 @@ header h1 {
     font-weight: 700;
 }
 
-.tab:hover:not(.active) {
-    color: var(--text);
-}
+.tab:hover:not(.active) { color: var(--text); }
 
-.trash-count-badge {
-    display: inline-block;
-    background: #c0392b;
-    color: white;
-    font-size: 0.65rem;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 10px;
-    min-width: 18px;
-    text-align: center;
-    line-height: 1.4;
-}
-
-/* ============================================
-   Main scrollable area
-   ============================================ */
 #main-content {
     flex: 1;
     overflow-y: auto;
@@ -161,16 +128,9 @@ header h1 {
     padding: 12px;
 }
 
-#main-content::-webkit-scrollbar {
-    width: 5px;
-}
-#main-content::-webkit-scrollbar-track {
-    background: transparent;
-}
-#main-content::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
-}
+#main-content::-webkit-scrollbar { width: 5px; }
+#main-content::-webkit-scrollbar-track { background: transparent; }
+#main-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
 .empty-message {
     text-align: center;
@@ -179,9 +139,28 @@ header h1 {
     font-size: 0.88rem;
 }
 
-/* ============================================
-   Item cards
-   ============================================ */
+/* 完了区切り線 */
+.completed-divider {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    padding: 12px 0 8px;
+    position: relative;
+}
+
+.completed-divider::before,
+.completed-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 28%;
+    height: 1px;
+    background: var(--border);
+}
+
+.completed-divider::before { left: 0; }
+.completed-divider::after { right: 0; }
+
 .item-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
@@ -195,13 +174,8 @@ header h1 {
     transition: opacity 0.2s, box-shadow 0.15s;
 }
 
-.item-card:hover {
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-}
-
-.item-card.completed {
-    opacity: 0.5;
-}
+.item-card:hover { box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1); }
+.item-card.completed { opacity: 0.5; }
 
 .item-left {
     flex-shrink: 0;
@@ -228,6 +202,16 @@ header h1 {
     white-space: pre-wrap;
 }
 
+.editable-text {
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+    transition: background 0.15s;
+}
+
+.editable-text:hover { background: #f0ede8; }
+
 .item-card.completed .item-text {
     text-decoration: line-through;
     color: var(--text-light);
@@ -239,34 +223,52 @@ header h1 {
     margin-top: 4px;
 }
 
-/* ============================================
-   Action buttons (edit, delete, restore)
-   ============================================ */
-.item-actions {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-end;
+/* インライン編集 */
+.item-edit-textarea {
+    width: 100%;
+    border: 1.5px solid var(--header-bg);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    background: #f8fff8;
+    color: var(--text);
+    min-height: 48px;
+    overflow-y: hidden;
 }
 
-.action-btn {
+.edit-save-btn {
+    margin-top: 6px;
+    background: var(--header-bg);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 5px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.edit-save-btn:hover { background: #2d5244; }
+
+.delete-btn {
+    flex-shrink: 0;
     background: none;
-    border: 1px solid transparent;
-    color: #aaa;
-    font-size: 0.85rem;
+    border: none;
+    color: #ccc;
+    font-size: 1rem;
     line-height: 1;
     cursor: pointer;
-    padding: 4px 6px;
+    padding: 2px 4px;
     border-radius: 6px;
-    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    transition: color 0.15s, background 0.15s;
+    margin-top: 1px;
     font-family: inherit;
-    white-space: nowrap;
-}
-
-.edit-btn:hover {
-    color: #2980b9;
-    background: #eaf4fc;
 }
 
 .delete-btn:hover {
@@ -274,174 +276,51 @@ header h1 {
     background: #fff2f0;
 }
 
-.restore-btn {
-    color: #27ae60;
-    border-color: #a9dfbf;
-    background: #eafaf1;
-    font-size: 0.75rem;
-    padding: 5px 10px;
-}
-
-.restore-btn:hover {
-    background: #d4efdf;
-    color: #1e8449;
-}
-
-.delete-forever-btn {
-    color: #c0392b;
-    border-color: #f5b7b1;
-    background: #fdedec;
-    font-size: 0.75rem;
-    padding: 5px 10px;
-}
-
-.delete-forever-btn:hover {
-    background: #fadbd8;
-    color: #922b21;
-}
-
-/* ============================================
-   Edit mode
-   ============================================ */
-.item-card.edit-mode {
-    border-color: var(--header-bg);
-    background: #fafcfa;
-    box-shadow: 0 4px 14px rgba(30, 58, 47, 0.15);
-}
-
-.edit-textarea {
+/* ゴミ箱 */
+.clear-trash-btn {
+    display: block;
     width: 100%;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 0.88rem;
-    font-family: inherit;
-    line-height: 1.6;
-    resize: none;
-    outline: none;
-    min-height: 60px;
-    max-height: 300px;
-    background: white;
-    color: var(--text);
-    transition: border-color 0.15s;
-}
-
-.edit-textarea:focus {
-    border-color: var(--header-bg);
-}
-
-.edit-buttons {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 8px;
-}
-
-.cancel-btn,
-.save-btn {
-    border: none;
-    border-radius: 8px;
-    padding: 7px 16px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s;
-}
-
-.cancel-btn {
-    background: #eee;
-    color: #555;
-}
-
-.cancel-btn:hover {
-    background: #ddd;
-}
-
-.save-btn {
-    background: var(--header-bg);
-    color: white;
-}
-
-.save-btn:hover {
-    background: #2d5244;
-}
-
-/* ============================================
-   Completed section
-   ============================================ */
-#completed-section {
-    margin-top: 4px;
-}
-
-.toggle-completed-btn {
-    width: 100%;
-    text-align: left;
+    text-align: center;
     background: none;
-    border: 1px dashed var(--border);
+    border: 1px dashed #ccc;
     border-radius: 10px;
     padding: 9px 14px;
     font-size: 0.8rem;
-    color: var(--text-light);
+    color: #e74c3c;
     cursor: pointer;
-    margin-bottom: 8px;
-    font-family: inherit;
-    transition: background 0.15s, color 0.15s;
-}
-
-.toggle-completed-btn:hover {
-    background: white;
-    color: var(--text);
-}
-
-/* ============================================
-   Trash section
-   ============================================ */
-#trash-section {
-    margin-top: 4px;
-}
-
-.trash-header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 4px;
-    margin-bottom: 8px;
-    font-size: 0.82rem;
-    color: var(--text-light);
-}
-
-.empty-trash-btn {
-    background: none;
-    border: 1px solid #f5b7b1;
-    color: #c0392b;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 0.78rem;
-    cursor: pointer;
+    margin-bottom: 12px;
     font-family: inherit;
     transition: background 0.15s;
 }
 
-.empty-trash-btn:hover {
-    background: #fdedec;
-}
+.clear-trash-btn:hover { background: #fff2f0; }
 
 .trash-card {
+    opacity: 0.75;
+    border-color: #ddd;
     background: #fafafa;
-    opacity: 0.85;
 }
 
-.trash-cat-label {
-    font-size: 0.7rem;
-    color: var(--text-light);
-    margin-bottom: 4px;
-    font-weight: 600;
+.restore-btn {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid #27ae60;
+    color: #27ae60;
+    border-radius: 7px;
+    padding: 3px 9px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+    transition: background 0.15s, color 0.15s;
+    margin-top: 1px;
 }
 
-/* ============================================
-   Footer / Add form
-   ============================================ */
+.restore-btn:hover {
+    background: #27ae60;
+    color: white;
+}
+
 footer {
     background: white;
     border-top: 1px solid var(--border);
@@ -494,18 +373,9 @@ footer {
     transition: background 0.15s, transform 0.1s;
 }
 
-#add-btn:hover {
-    background: #2d5244;
-}
+#add-btn:hover { background: #2d5244; }
+#add-btn:active { transform: scale(0.97); background: #142b22; }
 
-#add-btn:active {
-    transform: scale(0.97);
-    background: #142b22;
-}
-
-/* ============================================
-   Modal
-   ============================================ */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -526,10 +396,7 @@ footer {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
 
-.modal-box h2 {
-    font-size: 1.05rem;
-    margin-bottom: 10px;
-}
+.modal-box h2 { font-size: 1.05rem; margin-bottom: 10px; }
 
 .modal-box ol {
     padding-left: 18px;
@@ -560,36 +427,13 @@ footer {
     transition: background 0.15s;
 }
 
-.modal-close-btn:hover {
-    background: #2d5244;
-}
+.modal-close-btn:hover { background: #2d5244; }
 
-/* ============================================
-   Desktop enhancement
-   ============================================ */
 @media (min-width: 620px) {
     #app {
         border-left: 1px solid var(--border);
         border-right: 1px solid var(--border);
         box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
         min-height: 100vh;
-    }
-}
-
-/* ============================================
-   Mobile fine-tuning
-   ============================================ */
-@media (max-width: 480px) {
-    .item-actions {
-        flex-direction: column;
-    }
-    .action-btn {
-        font-size: 0.75rem;
-        padding: 3px 5px;
-    }
-    .restore-btn,
-    .delete-forever-btn {
-        font-size: 0.7rem;
-        padding: 4px 8px;
     }
 }
